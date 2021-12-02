@@ -1,10 +1,11 @@
 from django.db import models
+from django.http.request import HttpRequest;
 from django.shortcuts import render
 from .models import Book, Author, BookInstance, Genre
 from django.views import generic
 import re
 
-def index(request):
+def index(request: HttpRequest ):
     """
     Функция отображения для домашней страницы сайта.
     """
@@ -16,13 +17,17 @@ def index(request):
     num_authors=Author.objects.count()  # Метод 'all()' применён по умолчанию.
     num_genres = Genre.objects.count()
 
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
+
+
     # Отрисовка HTML-шаблона index.html с данными внутри
     # переменной контекста context
     return render(
         request,
         'index.html',
         context={'num_books':num_books,'num_instances':num_instances,'num_instances_available':num_instances_available,
-        'num_authors':num_authors,'num_genres':num_genres},
+        'num_authors':num_authors,'num_genres':num_genres,'num_visits':num_visits},
     )
 
 def books(request):
